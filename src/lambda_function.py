@@ -1,11 +1,12 @@
+import os
 import json
 import requests
 
 def lambda_handler(event, context):
-    # Salesforce connected app credentials
-    client_id = '3MVG9ZL0ppGP5UrCrqMBpTcesgjRbfX5O_sKWN3j.I8cNX6D7FKGK1GLLPw3B6Ko79VIsjQWQvImmTJYIFY0h'
-    client_secret = 'A8F439191EB1B9B744EFCE1254315D03748E9212EA3F008F1300358E1C3F48EB'
-    refresh_token = '5Aep861TSESvWeug_zJrKwzDXPX1LO920DfhQdFVY0Jjh7aitJpPbBP4ntcR0sdghJV0bjT20qD_GGHcyIU_yQV'
+    # Salesforce connected app credentials from environment variables
+    client_id = os.getenv('SALESFORCE_CLIENT_ID')
+    client_secret = os.getenv('SALESFORCE_CLIENT_SECRET')
+    refresh_token = os.getenv('SALESFORCE_REFRESH_TOKEN')
     token_url = 'https://login.salesforce.com/services/oauth2/token'
 
     # Request payload for token refresh
@@ -37,3 +38,8 @@ def lambda_handler(event, context):
             'statusCode': response.status_code,
             'body': json.dumps('Failed to refresh token.')
         }
+
+if __name__ == '__main__':
+    event = {}
+    context = None
+    lambda_handler(event, context)
