@@ -3,6 +3,12 @@ Transform: 'AWS::Serverless-2016-10-31'
 Description: >
   SAM Template for deploying a Lambda function that refreshes Salesforce tokens and reads credentials from SSM Parameter Store.
 
+Parameters:
+  InvocationInterval:
+    Type: String
+    Default: 'rate(1 hour)'
+    Description: 'The interval at which the Lambda function is triggered. For example, rate(1 hour), rate(5 minutes), cron(0 12 * * ? *), etc.'
+
 Resources:
   LambdaFunction:
     Type: 'AWS::Serverless::Function'
@@ -49,6 +55,22 @@ Resources:
       Value: 'DummyValueReplaceWithActual'
       Type: 'String'  # CloudFormation unable to deploy SecureString, perhaps need to be raised with AWS Support
       Tier: 'Standard'
+
+  LambdaInvocationSchedule:
+    Type: 'AWS::Events::Rule'
+    Properties:
+      ScheduleExpression: !Ref InvocationInterval
+      Targets:
+        - Arn: !GetAtt LambdaFunction.Arn
+          Id: 'SalesforceTokenRefreshFunction'
+
+  LambdaInvocationPermission:
+    Type: 'AWS::Lambda::Permission'
+    Properties:
+      Action: 'lambda:InvokeFunction'
+      FunctionName: !Ref LambdaFunction
+      Principal: 'events.amazonaws.com'
+      SourceArn: !GetAtt LambdaInvocationSchedule.Arn
 
 Outputs:
   SalesforceTokenRefreshFunctionArn:
