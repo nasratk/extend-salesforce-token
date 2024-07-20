@@ -1,0 +1,56 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: 'AWS::Serverless-2016-10-31'
+Description: >
+  SAM Template for deploying a Lambda function that refreshes Salesforce tokens and reads credentials from SSM Parameter Store.
+
+Resources:
+  LambdaFunction:
+    Type: 'AWS::Serverless::Function'
+    Properties:
+      FunctionName: ExtendSalesforceAccessToken
+      Handler: lambda_function.lambda_handler
+      Runtime: python3.12
+      CodeUri: src
+      Description: Lambda function to refresh Salesforce tokens
+      MemorySize: 128
+      Timeout: 30
+      Policies:
+        - AWSLambdaBasicExecutionRole
+        - Version: '2012-10-17'
+          Statement:
+            - Effect: 'Allow'
+              Action:
+                - 'ssm:GetParameter'
+              Resource:
+                - !Sub 'arn:aws:ssm:${AWS::Region}:${AWS::AccountId}:parameter/SalesforceClientId'
+                - !Sub 'arn:aws:ssm:${AWS::Region}:${AWS::AccountId}:parameter/SalesforceClientSecret'
+                - !Sub 'arn:aws:ssm:${AWS::Region}:${AWS::AccountId}:parameter/SalesforceRefreshToken'
+
+  SalesforceClientIdParameter:
+    Type: 'AWS::SSM::Parameter'
+    Properties:
+      Name: '/SalesforceClientId'
+      Value: 'DummyValueReplaceWithActual'
+      Type: 'String'  # CloudFormation unable to deploy SecureString, perhaps need to be raised with AWS Support
+      Tier: 'Standard'
+
+  SalesforceClientSecretParameter:
+    Type: 'AWS::SSM::Parameter'
+    Properties:
+      Name: '/SalesforceClientSecret'
+      Value: 'DummyValueReplaceWithActual'
+      Type: 'String'  # CloudFormation unable to deploy SecureString, perhaps need to be raised with AWS Support
+      Tier: 'Standard'
+
+  SalesforceRefreshTokenParameter:
+    Type: 'AWS::SSM::Parameter'
+    Properties:
+      Name: '/SalesforceRefreshToken'
+      Value: 'DummyValueReplaceWithActual'
+      Type: 'String'  # CloudFormation unable to deploy SecureString, perhaps need to be raised with AWS Support
+      Tier: 'Standard'
+
+Outputs:
+  SalesforceTokenRefreshFunctionArn:
+    Description: 'ARN of the Lambda function'
+    Value: !GetAtt LambdaFunction.Arn

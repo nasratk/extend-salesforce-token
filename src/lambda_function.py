@@ -1,12 +1,20 @@
-import os
 import json
+import boto3
 import requests
 
+# Initialize AWS SDK clients
+ssm_client = boto3.client('ssm')
+
+# Function to retrieve parameter from Parameter Store
+def get_parameter(name):
+    response = ssm_client.get_parameter(Name=name, WithDecryption=True)
+    return response['Parameter']['Value']
+
 def lambda_handler(event, context):
-    # Salesforce connected app credentials from environment variables
-    client_id = os.getenv('SALESFORCE_CLIENT_ID')
-    client_secret = os.getenv('SALESFORCE_CLIENT_SECRET')
-    refresh_token = os.getenv('SALESFORCE_REFRESH_TOKEN')
+    # Retrieve Salesforce credentials from Parameter Store
+    client_id = get_parameter('/SalesforceClientId')
+    client_secret = get_parameter('/SalesforceClientSecret')
+    refresh_token = get_parameter('/SalesforceRefreshToken')
     token_url = 'https://login.salesforce.com/services/oauth2/token'
 
     # Request payload for token refresh
@@ -39,6 +47,7 @@ def lambda_handler(event, context):
             'body': json.dumps('Failed to refresh token.')
         }
 
+# For local testing, simulate event and context
 if __name__ == '__main__':
     event = {}
     context = None
