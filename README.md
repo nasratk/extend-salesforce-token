@@ -45,9 +45,9 @@ The template parameterises the interval between Lambda function invocations. You
 
 To deploy the application, use the AWS SAM CLI:
 
-'''bash
+```bash
 sam build
 sam deploy --guided
-'''
+```
 
 During initial deployment, parameters are created using dummy values which you will need to be updated with the actual values for those parameters for the lambda function to operate.
