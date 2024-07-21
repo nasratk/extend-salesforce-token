@@ -3,3 +3,4 @@ utilities/
 parameters.json
 parameters.txt
 .aws-sam/
+samconfig.toml

@@ -1,9 +1,9 @@
 version = 0.1
 [default.deploy.parameters]
-stack_name = "SFTokenRefresh"
+stack_name = "SFExtendAccessToken"
 resolve_s3 = true
-s3_prefix = "SFTokenRefresh"
+s3_prefix = "SFExtendAccessToken"
 region = "eu-west-2"
 capabilities = "CAPABILITY_IAM"
+parameter_overrides = "InvocationInterval=\"rate(1 hour)\""
 image_repositories = []
-parameter_overrides = "SalesforceClientId=\"\" SalesforceClientSecret=\"\" SalesforceRefreshToken=\"\""

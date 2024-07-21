@@ -2,6 +2,8 @@
 
 This repository contains an AWS Lambda function that refreshes Salesforce tokens. The function reads credentials from the AWS Systems Manager (SSM) Parameter Store and uses these credentials to request a new access token from Salesforce. The function is triggered automatically at a specified interval using Amazon EventBridge.
 
+This repository also contains files to deploy the Lambda function using SAM. The SAM template is defined in template.yaml
+
 ## Overview
 
 - **Language**: Python 3.12
@@ -43,7 +45,9 @@ The template parameterises the interval between Lambda function invocations. You
 
 To deploy the application, use the AWS SAM CLI:
 
+'''bash
 sam build
 sam deploy --guided
+'''
 
 During initial deployment, parameters are created using dummy values which you will need to be updated with the actual values for those parameters for the lambda function to operate.
